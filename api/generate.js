@@ -16,7 +16,7 @@ async function scrapeReference(url) {
   return { sections: sections.slice(0, 8), styles: styles.substring(0, 1000) };
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
@@ -52,4 +52,4 @@ Genera el nuevo código HTML completo, moderno y responsive. Asegúrate de mante
     console.error(error);
     res.status(500).json({ error: 'Error generando el sitio' });
   }
-}
+};
