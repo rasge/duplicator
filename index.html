@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibe Site Generator</title>
+  <style>
+    body { font-family: system-ui; max-width: 800px; margin: 40px auto; padding: 20px; background: #f9f9f9; }
+    textarea, input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 8px; }
+    button { padding: 12px 24px; background: #0070f3; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; }
+    #preview { border: 1px solid #ddd; background: white; margin-top: 30px; padding: 15px; border-radius: 8px; min-height: 400px; }
+    iframe { width: 100%; height: 500px; border: none; }
+  </style>
+</head>
+<body>
+  <h1>🧠 Vibe Site Generator</h1>
+  <p>Pega la URL de un sitio que te guste y describe cómo quieres transformarlo.</p>
+  
+  <input type="url" id="url" placeholder="https://ejemplo.com" required>
+  <textarea id="ideas" rows="4" placeholder="Ej: Quiero que el fondo sea oscuro, el logo sea una estrella, y en lugar de 'Servicios' ponga 'Superpoderes'..."></textarea>
+  <button onclick="generateSite()">Generar mi sitio</button>
+  
+  <div id="preview"></div>
+  
+  <script>
+    async function generateSite() {
+      const url = document.getElementById('url').value;
+      const ideas = document.getElementById('ideas').value;
+      const preview = document.getElementById('preview');
+      preview.innerHTML = '✨ Generando...';
+      
+      try {
+        const res = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url, ideas })
+        });
+        const data = await res.json();
+        if (data.html) {
+          const cleanHTML = data.html.replace(/```html|```/g, '');
+          preview.innerHTML = `<iframe srcdoc="${cleanHTML.replace(/"/g, '&quot;')}"></iframe>
+            <br><button onclick="copyCode(\`${cleanHTML.replace(/`/g, '\\`')}\`)">📋 Copiar código</button>
+            <button onclick="downloadCode(\`${cleanHTML.replace(/`/g, '\\`')}\`)">💾 Descargar HTML</button>`;
+        } else {
+          preview.innerHTML = '❌ No se pudo generar el sitio.';
+        }
+      } catch (err) {
+        preview.innerHTML = 'Error: ' + err.message;
+      }
+    }
+    
+    function copyCode(code) {
+      navigator.clipboard.writeText(code).then(() => alert('Código copiado al portapapeles'));
+    }
+    
+    function downloadCode(code) {
+      const blob = new Blob([code], {type: 'text/html'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'mi-sitio.html';
+      a.click();
+    }
+  </script>
+</body>
+</html>
