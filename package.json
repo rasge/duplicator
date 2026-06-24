@@ -1,0 +1,14 @@
+{
+  "name": "vibe-generator",
+  "version": "1.0.0",
+  "description": "Transforma sitios web con tus ideas usando IA",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "cheerio": "^1.0.0",
+    "openai": "^4.47.1"
+  }
+}
